@@ -1,11 +1,13 @@
+// next.config.ts
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
-      bodySizeLimit: "20mb", // Increase the limit to 20 MB, you can set it to whatever fits your use case
+      bodySizeLimit: "20mb", // This increases the file size limit
     },
   },
+  reactStrictMode: true, // Optional: You can enable or disable react strict mode
 };
 
 export default nextConfig;
