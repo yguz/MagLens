@@ -1,12 +1,13 @@
-// src/app/components/ChatComponent.tsx
+"use client";
+
 import React, { useState } from "react";
 
 const ChatComponent = () => {
   const [message, setMessage] = useState(""); // The input message
   const [review, setReview] = useState(""); // The generated review from Gemini
-  const [loading, setLoading] = useState(false); // Loading state to show a spinner or message
-  const [file, setFile] = useState<File | null>(null); // File state for storing the uploaded file
-  const [fileName, setFileName] = useState(""); // Display file name for user feedback
+  const [loading, setLoading] = useState(false); // Loading state
+  const [file, setFile] = useState<File | null>(null); // Uploaded file state
+  const [fileName, setFileName] = useState(""); // Display file name
 
   // Handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,54 +18,59 @@ const ChatComponent = () => {
     }
   };
 
-  // Handle form submission (including file upload and message processing)
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setReview(""); // Clear previous review
 
     try {
-      let requestBody = { message };
-
-      // If a file is uploaded, append it to the request body
-      const formData = new FormData();
       if (file) {
-        formData.append("file", file); // Append the file to FormData
-        formData.append("message", message); // Also append the message text
+        // Handle file upload
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("message", message);
 
-        // Send file to backend API
         const response = await fetch("/api/upload", {
           method: "POST",
           body: formData,
         });
 
         const data = await response.json();
+
         if (response.ok) {
-          const reviewText = data.response?.candidates[0]?.content?.parts[0]?.text;
-          setReview(reviewText || "No review generated.");
+          // Extract review text
+          console.log('blue blue :', data.review.parts[0].text);
+          const reviewText = data.review.parts[0].text || "No review generated.";
+          console.log('blue blue 2 :', reviewText);
+          setReview(reviewText);
         } else {
-          setReview("Error processing file.");
+          setReview(data.error || "Error processing file.");
         }
       } else {
-        // If no file, only send the message for review
+        // Handle message-only submission
         const response = await fetch("/api/chat", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(requestBody),
+          body: JSON.stringify({ message }),
         });
 
         const data = await response.json();
+
         if (response.ok) {
-          const reviewText = data.response?.candidates[0]?.content?.parts[0]?.text;
-          setReview(reviewText || "No review generated.");
+          // Extract review text
+          const reviewText = data?.parts?.map((part: any) => part.text).join("\n") || "No review generated.";
+          console.log('review text: ', reviewText);
+          setReview(reviewText);
         } else {
-          setReview("Error generating review.");
+          setReview(data.error || "Error generating review.");
         }
       }
     } catch (error) {
       console.error("Error:", error);
-      setReview("An error occurred while generating the review.");
+      setReview("An error occurred while processing your request.");
     } finally {
       setLoading(false);
     }
@@ -92,17 +98,21 @@ const ChatComponent = () => {
             onChange={handleFileChange}
             className="border border-gray-300 p-2 rounded"
           />
-          {fileName && <p className="text-sm mt-2 text-gray-600">{fileName}</p>}
+          {fileName && <p className="text-sm mt-2 text-gray-600">Selected File: {fileName}</p>}
         </div>
 
         <button
           type="submit"
-          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+          className={`mt-2 px-4 py-2 rounded ${
+            loading ? "bg-gray-500" : "bg-blue-500 text-white"
+          }`}
           disabled={loading}
         >
-          {loading ? "Generating..." : "Generate Review"}
+          {loading ? "Processing..." : "Generate Review"}
         </button>
       </form>
+
+      {loading && <p>Loading your review...</p>}
 
       {review && (
         <div className="mt-4 p-4 border border-gray-300 rounded">
