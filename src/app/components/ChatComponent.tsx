@@ -39,10 +39,8 @@ const ChatComponent = () => {
         const data = await response.json();
 
         if (response.ok) {
-          // Extract review text
-          console.log('blue blue :', data.review.parts[0].text);
-          const reviewText = data.review.parts[0].text || "No review generated.";
-          console.log('blue blue 2 :', reviewText);
+          // Extract review text from file-based response
+          const reviewText = data.review?.parts?.[0]?.text || "No review generated.";
           setReview(reviewText);
         } else {
           setReview(data.error || "Error processing file.");
@@ -60,9 +58,8 @@ const ChatComponent = () => {
         const data = await response.json();
 
         if (response.ok) {
-          // Extract review text
+          // Extract review text from message-only response
           const reviewText = data?.parts?.map((part: any) => part.text).join("\n") || "No review generated.";
-          console.log('review text: ', reviewText);
           setReview(reviewText);
         } else {
           setReview(data.error || "Error generating review.");
