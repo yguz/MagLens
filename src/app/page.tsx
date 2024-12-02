@@ -1,10 +1,9 @@
-'use client';  // This makes the file a client-side component
+'use client'; // This makes the file a client-side component
 
 import { useState } from 'react';
-import FileUpload from './components/FileUpload';
-import ChatBox from './components/ChatBox';
+import ChatComponent from './components/ChatComponent';
 
-const Home = () => {
+const HomePage = () => {
   const [chatHistory, setChatHistory] = useState<any[]>([]);
 
   const handleChat = async (userInput: string) => {
@@ -18,12 +17,13 @@ const Home = () => {
   };
 
   return (
-    <div className="container">
-      <h1>SES Mag - Review by Fee</h1>
-      <FileUpload onUpload={(fileData) => handleChat(fileData)} />
-      <ChatBox history={chatHistory} />
+    <div className="container mx-auto px-4">
+      <h1 className="text-center text-3xl font-bold mt-10">
+        Welcome to SESMag Review Generator
+      </h1>
+      <ChatComponent history={chatHistory} onSendMessage={handleChat} />
     </div>
   );
 };
 
-export default Home;
+export default HomePage;

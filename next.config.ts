@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "20mb", // This increases the file size limit
     },
   },
-  reactStrictMode: true, // Optional: You can enable or disable react strict mode
+  reactStrictMode: false, // Optional: You can enable or disable react strict mode
 };
 
 export default nextConfig;

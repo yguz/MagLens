@@ -3,6 +3,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
+// @ts-ignore
 import pdf from "pdf-parse";
 
 // Disable the default body parser for handling file uploads

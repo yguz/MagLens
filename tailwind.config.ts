@@ -1,10 +1,8 @@
-import type { Config } from "tailwindcss";
-
 export default {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}", // Match all files in pages directory and subdirectories
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}", // Match all files in components directory and subdirectories
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}", // Match all files in the app directory and subdirectories
   ],
   theme: {
     extend: {
