@@ -55,11 +55,16 @@ const ChatComponent = () => {
           body: JSON.stringify({ message }),
         });
 
+        console.log('message: ', message);
+
         const data = await response.json();
+
+        console.log('data: ', data);
 
         if (response.ok) {
           // Extract review text from message-only response
-          const reviewText = data?.parts?.map((part: any) => part.text).join("\n") || "No review generated.";
+          const reviewText = data.review || "No review generated.";
+          console.log('frotend review: ', reviewText);
           setReview(reviewText);
         } else {
           setReview(data.error || "Error generating review.");

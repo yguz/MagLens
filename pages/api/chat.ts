@@ -2,7 +2,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 // Function to call the Gemini API for generating a review
 const callChatApi = async (text: string): Promise<string> => {
-  const apiKey = process.env.GEMINI_API_KEY; // Ensure your API key is securely stored in an environment variable
+  console.log("callChatApi: Starting API call with text:", text);
+
+  const apiKey = process.env.GEMINI_API_KEY;
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
   const requestBody = {
@@ -17,6 +19,8 @@ const callChatApi = async (text: string): Promise<string> => {
     ],
   };
 
+  console.log("callChatApi: Request body:", requestBody);
+
   const response = await fetch(apiUrl, {
     method: "POST",
     headers: {
@@ -26,54 +30,47 @@ const callChatApi = async (text: string): Promise<string> => {
   });
 
   const responseData = await response.json();
+  console.log("callChatApi: Response data:", responseData);
 
   if (!response.ok) {
-    throw new Error(`Gemini API request failed: ${responseData.error.message}`);
+    throw new Error(
+      `Gemini API request failed: ${
+        responseData.error?.message || "Unknown error"
+      }`
+    );
   }
 
+  // Safely access the nested structure
   const reviewText =
-    responseData.candidates?.[0]?.text || "No content available";
+    responseData.candidates?.[0]?.content?.parts
+      ?.map((part: any) => part.text)
+      .join("\n") || "No content available";
 
-  console.log("Generated Review: ", reviewText);
-
-  if (!reviewText) {
-    throw new Error("No review text received from the Gemini API.");
-  }
+  console.log("callChatApi: Generated review text:", reviewText);
 
   return reviewText;
 };
 
+// API handler for the chat request
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  try {
-    if (req.method === "POST") {
-      // Read the body as a string and parse the message
-      const body = await new Promise<string>((resolve, reject) => {
-        let data = "";
-        req.on("data", (chunk) => {
-          data += chunk;
-        });
-        req.on("end", () => resolve(data));
-        req.on("error", (err) => reject(err));
-      });
+  if (req.method === "POST") {
+    try {
+      // Body is already parsed, so directly access `req.body`
+      const { message } = req.body;
 
-      // Parse the body content and extract the message
-      const parsedBody = JSON.parse(body);
-      const text = parsedBody.message || "";
+      // Call the chat API with the message
+      const review = await callChatApi(message);
 
-      // Call the chat API with the text
-      const review = await callChatApi(text);
-
-      // Respond with the generated review
       res.status(200).json({ review });
-    } else {
-      console.error("Invalid HTTP method:", req.method);
-      res.status(405).json({ error: "Method Not Allowed" });
+    } catch (error: any) {
+      console.error("API Handler: Error occurred:", error.message);
+      res.status(500).json({ error: "Internal Server Error" });
     }
-  } catch (error: any) {
-    console.error("Error in API route:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+  } else {
+    console.error("API Handler: Invalid HTTP method:", req.method);
+    res.status(405).json({ error: "Method Not Allowed" });
   }
 }
