@@ -1,0 +1,40 @@
+/* Chat message styles */
+.message {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  
+  .message .avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #ccc;
+    margin-right: 10px;
+  }
+  
+  .message .content {
+    flex: 1; /* Allows content to take full width minus avatar */
+    max-width: 100%; /* Prevents overflow outside the container */
+    background-color: #e9ecef;
+    padding: 10px;
+    border-radius: 8px;
+    overflow-wrap: break-word; /* Ensures long words break to fit within the container */
+    overflow: hidden; /* Hides any overflow content */
+    text-overflow: ellipsis; /* Adds ellipsis (...) for truncated text */
+    white-space: pre-wrap; /* Preserves whitespace but wraps long lines */
+  }
+  
+  .message.user .content {
+    flex: 1; /* Allows content to take full width minus avatar */
+    max-width: 100%; /* Prevents overflow outside the container */
+    padding: 10px;
+    border-radius: 8px;
+    overflow-wrap: break-word; /* Ensures long words break to fit within the container */
+    overflow: hidden; /* Hides any overflow content */
+    text-overflow: ellipsis; /* Adds ellipsis (...) for truncated text */
+    white-space: pre-wrap; /* Preserves whitespace but wraps long lines */
+    background-color: #007bff;
+    color: #fff;
+  }
+  
