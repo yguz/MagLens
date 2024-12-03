@@ -31,14 +31,16 @@ In the frontend directory, run the following command to install the required dep
 
 ```bash
 npm install
+```
+
 Start the frontend:
 To run the frontend, use the following command:
-```
 
 ```bash
 npm run dev
-This will start the development server for the frontend application. You can access it at http://localhost:3000.
 ```
+
+This will start the development server for the frontend application. You can access it at http://localhost:3000.
 
 ### 3 **Set Up the Backend (Node.js)**
 
@@ -49,9 +51,10 @@ In the backend directory, run the following command to install the required depe
 
 ```bash
 npm install
+```
+
 Start the backend:
 To run the backend, open a new terminal window, navigate to the backend directory, and run:
-```
 
 ```bash
 npm run start
@@ -109,8 +112,6 @@ Once the database is set up and the environment variables are configured, you ca
 Frontend
 To run the frontend, use the following command:
 
-bash
-
 ```bash
 npm run dev
 ```
@@ -152,8 +153,10 @@ You can check the files and conversations tables in PostgreSQL to verify that th
 Troubleshooting
 Database connection issues: Make sure the PostgreSQL server is running and the correct port is specified in your connection string.
 Gemini API issues: Ensure the API key is correctly set in the .env file. Verify that you have the necessary access to the Gemini API.
+
 File upload errors: Ensure that the backend is set up to handle large file uploads correctly and that the file size does not exceed limits.
 Additional Notes
 Ensure the port for PostgreSQL is configured correctly in both the database and backend configuration files (5433 by default).
+
 The file upload functionality requires the backend to handle large file uploads properly. Make sure the body parser is disabled for the backend API.
 The generated review from the Gemini API is saved in the database and can be retrieved later along with the uploaded file's metadata.
