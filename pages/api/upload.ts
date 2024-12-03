@@ -1,10 +1,9 @@
-"use client";
-
 import { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
 // @ts-ignore
 import pdf from "pdf-parse";
+import { Pool } from "pg";
 
 // Disable the default body parser for handling file uploads
 export const config = {
@@ -13,34 +12,45 @@ export const config = {
   },
 };
 
+// Set up PostgreSQL connection pool
+const pool = new Pool({
+  user: "postgres", // replace with your PostgreSQL username
+  host: "localhost",
+  database: "chat_app", // use the database you created
+  password: "password", // replace with your password
+  port: 5433,
+});
+
+// Function to save the uploaded file
 const saveFile = async (req: NextApiRequest) => {
   return new Promise<string>((resolve, reject) => {
-    const filePath = path.join(process.cwd(), "uploads", "uploaded.pdf");
+    const fileName = `uploaded_${Date.now()}.pdf`; // Generate a unique file name
+    const filePath = path.join(process.cwd(), "uploads", fileName);
     const fileStream = fs.createWriteStream(filePath);
 
     req.pipe(fileStream);
 
-    req.on("end", () => resolve(filePath));
+    req.on("end", () => resolve(filePath)); // Resolve with the full file path
     req.on("error", (err) => {
       console.error("Error saving file:", err);
-      reject(err); // Log any error during the file save
+      reject(err);
     });
   });
 };
 
+// Function to extract text from the PDF
 const extractPdfText = async (filePath: string): Promise<string> => {
   const dataBuffer = fs.readFileSync(filePath);
   const pdfData = await pdf(dataBuffer);
   return pdfData.text;
 };
 
-console.log("this worked!");
-
+// Function to call the Gemini API for generating a review
 const callChatApi = async (text: string): Promise<string> => {
   const apiKey = process.env.GEMINI_API_KEY; // Ensure your API key is securely stored in an environment variable
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
-  // Correct request body structure
+  // Request body structure
   const requestBody = {
     contents: [
       {
@@ -53,11 +63,6 @@ const callChatApi = async (text: string): Promise<string> => {
     ],
   };
 
-  console.log(
-    "Request body for Gemini API:",
-    JSON.stringify(requestBody, null, 2)
-  );
-
   const response = await fetch(apiUrl, {
     method: "POST",
     headers: {
@@ -66,23 +71,31 @@ const callChatApi = async (text: string): Promise<string> => {
     body: JSON.stringify(requestBody),
   });
 
-  console.log("Response status:", response.status);
-
   const responseData = await response.json();
-  console.log("Response data:", responseData);
 
   if (!response.ok) {
     throw new Error(`Gemini API request failed: ${responseData.error.message}`);
   }
 
-  const reviewText =
-    responseData.candidates?.[0]?.content || "No content available";
+  return responseData.candidates?.[0]?.content || "No review generated.";
+};
 
-  if (!reviewText) {
-    throw new Error("No review text received from the Gemini API.");
+// Function to save file metadata to the database
+const saveFileMetadata = async (
+  fileName: string,
+  filePath: string,
+  review: string
+) => {
+  try {
+    // Save file metadata and extracted data to the database
+    const result = await pool.query(
+      "INSERT INTO files (file_name, file_path, review) VALUES ($1, $2, $3) RETURNING id",
+      [fileName, filePath, review]
+    );
+    console.log("File saved with ID:", result.rows[0].id);
+  } catch (err) {
+    console.error("Error saving file metadata:", err);
   }
-
-  return reviewText;
 };
 
 export default async function handler(
@@ -91,23 +104,24 @@ export default async function handler(
 ) {
   try {
     if (req.method === "POST") {
-      // Step 1: Save the file
+      // Step 1: Save the uploaded file and generate a unique file name
       console.log("File upload started...");
       const filePath = await saveFile(req);
-      console.log("File saved at:", filePath);
+      const fileName = path.basename(filePath); // Extract the file name
 
       // Step 2: Extract text from the PDF
       const text = await extractPdfText(filePath);
-      console.log("Extracted text:", text);
 
       // Step 3: Call the chat API with the extracted text
       const review = await callChatApi(text);
       console.log("Generated review:", review);
 
+      // Step 4: Save file metadata (name, path, extracted text, review) to the database
+      await saveFileMetadata(fileName, filePath, review);
+
       // Respond with the generated review
       res.status(200).json({ review });
     } else {
-      console.error("Invalid HTTP method:", req.method);
       res.status(405).json({ error: "Method Not Allowed" });
     }
   } catch (error: any) {

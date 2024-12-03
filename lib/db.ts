@@ -2,9 +2,9 @@ import mysql from "mysql2";
 
 const db = mysql.createConnection({
   host: "localhost",
-  user: "root",
+  user: "postgres",
   password: "password",
-  database: "sesmag_db",
+  database: "chat_app",
 });
 
 db.connect((err) => {
