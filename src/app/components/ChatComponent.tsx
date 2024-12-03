@@ -39,7 +39,7 @@ const ChatComponent = () => {
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || file.type !== "application/pdf") {
-      alert("Please upload a valid PDF file.");
+      console.log("Please upload a valid PDF file.");
       return;
     }
 
@@ -62,10 +62,10 @@ const ChatComponent = () => {
         { user: `User uploaded a file ${file.name}`, fee: data.review.parts[0].text },
       ]);
 
-      alert("File uploaded successfully!"); // Customize this based on your API response
+      console.log("File uploaded successfully!"); // Customize this based on your API response
     } catch (error) {
       console.error("Error uploading file:", error);
-      alert("Error uploading file.");
+      console.log("Error uploading file.");
     }
   };
 
@@ -74,37 +74,53 @@ const ChatComponent = () => {
       <h1 className={styles.title}>Fee's ChatGPT-style Review Generator</h1>
 
       <div className={styles.chatWindow}>
-        {chatHistory.map((entry, index) => (
-          <React.Fragment key={index}>
-            <div className={styles.message}>
-              <div className={styles.avatar}></div>
-              <div className={styles.content}>{entry.user}</div>
-            </div>
-            <div className={`${styles.message} ${styles.user}`}>
-              <div className={styles.avatar}></div>
-              <div className={styles.content}>{entry.fee}</div>
-            </div>
-          </React.Fragment>
-        ))}
+  {chatHistory.map((entry, index) => (
+    <React.Fragment key={index}>
+      <div className={styles.message}>
+        <img
+          src="https://www.iconpacks.net/icons/2/free-user-icon-3296-thumb.png"
+          alt="User Avatar"
+          className={styles.avatar}
+        />
+        <div className={styles.content}>{entry.user}</div>
       </div>
+      <div className={`${styles.message} ${styles.user}`}>
+        <img
+          src="https://obi2.kean.edu/~ykumar@kean.edu/sesmag/fee.png"
+          alt="Fee Avatar"
+          className={styles.avatar}
+        />
+        <div className={styles.content}>{entry.fee}</div>
+      </div>
+    </React.Fragment>
+  ))}
+  {loading && (
+    <div className={styles.spinnerContainer}>
+      <div className={styles.spinner}></div>
+    </div>
+  )}
+</div>
+
 
       <form onSubmit={handleSubmit} className={styles.inputArea}>
-        <textarea
-          rows={2}
-          placeholder="Type your message here..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          disabled={loading}
-        ></textarea>
-        <button type="submit" disabled={loading}>
-          {loading ? "Sending..." : "Send"}
-        </button>
-        <input
-          type="file"
-          accept="application/pdf"
-          onChange={handleFileUpload}
-          className={styles.uploadButton}
-        />
+      <textarea
+  className={styles.textarea}
+  rows={2}
+  placeholder="Type your message here..."
+  value={message}
+  onChange={(e) => setMessage(e.target.value)}
+  disabled={loading}
+/>
+<button className={styles.sendButton} type="submit" disabled={loading}>
+  {loading ? "Sending..." : "Send"}
+</button>
+<input
+  type="file"
+  accept="application/pdf"
+  onChange={handleFileUpload}
+  className={styles.uploadButton}
+/>
+
       </form>
     </div>
   );
