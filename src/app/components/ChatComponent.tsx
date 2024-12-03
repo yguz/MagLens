@@ -71,58 +71,58 @@ const ChatComponent = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Fee's ChatGPT-style Review Generator</h1>
+  <h1 className={styles.title}>Fee's ChatGPT-style Review Generator</h1>
 
-      <div className={styles.chatWindow}>
-  {chatHistory.map((entry, index) => (
-    <React.Fragment key={index}>
-      <div className={styles.message}>
-        <img
-          src="https://www.iconpacks.net/icons/2/free-user-icon-3296-thumb.png"
-          alt="User Avatar"
-          className={styles.avatar}
-        />
-        <div className={styles.content}>{entry.user}</div>
-      </div>
-      <div className={`${styles.message} ${styles.user}`}>
-        <img
-          src="https://obi2.kean.edu/~ykumar@kean.edu/sesmag/fee.png"
-          alt="Fee Avatar"
-          className={styles.avatar}
-        />
-        <div className={styles.content}>{entry.fee}</div>
-      </div>
-    </React.Fragment>
-  ))}
-  {loading && (
-    <div className={styles.spinnerContainer}>
-      <div className={styles.spinner}></div>
+  <div className={styles.chatContainer}>
+    <div className={styles.chatWindow}>
+      {chatHistory.map((entry, index) => (
+        <React.Fragment key={index}>
+          <div className={styles.message}>
+            <img
+              src="https://www.iconpacks.net/icons/2/free-user-icon-3296-thumb.png"
+              alt="User Avatar"
+              className={styles.avatar}
+            />
+            <div className={styles.content}>{entry.user}</div>
+          </div>
+          <div className={`${styles.message} ${styles.user}`}>
+            <img
+              src="https://obi2.kean.edu/~ykumar@kean.edu/sesmag/fee.png"
+              alt="Fee Avatar"
+              className={styles.avatar}
+            />
+            <div className={styles.content}>{entry.fee}</div>
+          </div>
+        </React.Fragment>
+      ))}
+      {loading && (
+        <div className={styles.spinnerContainer}>
+          <div className={styles.spinner}></div>
+        </div>
+      )}
     </div>
-  )}
+    <form onSubmit={handleSubmit} className={styles.inputArea}>
+      <textarea
+        className={styles.textarea}
+        rows={2}
+        placeholder="Type your message here..."
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        disabled={loading}
+      />
+      <button className={styles.sendButton} type="submit" disabled={loading}>
+        {loading ? "Sending..." : "Send"}
+      </button>
+      <input
+        type="file"
+        accept="application/pdf"
+        onChange={handleFileUpload}
+        className={styles.uploadButton}
+      />
+    </form>
+  </div>
 </div>
 
-
-      <form onSubmit={handleSubmit} className={styles.inputArea}>
-      <textarea
-  className={styles.textarea}
-  rows={2}
-  placeholder="Type your message here..."
-  value={message}
-  onChange={(e) => setMessage(e.target.value)}
-  disabled={loading}
-/>
-<button className={styles.sendButton} type="submit" disabled={loading}>
-  {loading ? "Sending..." : "Send"}
-</button>
-<input
-  type="file"
-  accept="application/pdf"
-  onChange={handleFileUpload}
-  className={styles.uploadButton}
-/>
-
-      </form>
-    </div>
   );
 };
 
