@@ -1,3 +1,15 @@
+
+<img width="1440" alt="Screenshot 2024-12-02 at 11 58 54 PM" src="https://github.com/user-attachments/assets/46986d3c-8b30-429d-a6cf-d6a54f0956f0">
+
+<img width="1440" alt="Screenshot 2024-12-02 at 11 57 02 PM" src="https://github.com/user-attachments/assets/ea85588d-fa97-4dcb-a8fa-47e51a04d6d2">
+
+<img width="1440" alt="Screenshot 2024-12-02 at 11 57 12 PM" src="https://github.com/user-attachments/assets/1a36dab2-891b-4cf2-b865-54f11f86955b">
+
+<img width="1439" alt="Screenshot 2024-12-02 at 11 58 11 PM" src="https://github.com/user-attachments/assets/f2f53eae-dca0-4ebb-97db-b4661831f0de">
+
+
+
+
 # App README
 
 This project consists of a **Next.js** frontend and a **Node.js** backend with PostgreSQL for database management. Below are the steps to set up and run the application.
